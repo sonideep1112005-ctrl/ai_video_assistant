@@ -1,0 +1,246 @@
+{% raw %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaos Maker · AI Video Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F0E7D9;--dark:#1B150F;--orange:#FA601F;--r:22px}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--dark);font:500 16px/1.6 'DM Sans',sans-serif;overflow-x:hidden;cursor:none}
+h1,h2,h3,.disp{font-family:'Lilita One',sans-serif;font-weight:400;line-height:1}
+a,button,input,label,textarea{cursor:none}
+body::before{content:"";position:fixed;inset:0;background-image:radial-gradient(var(--dark) 1px,transparent 1.4px);background-size:26px 26px;opacity:.07;pointer-events:none}
+/* cursor */
+#dot,#ring{position:fixed;top:0;left:0;pointer-events:none;z-index:999;border-radius:50%}
+#dot{width:8px;height:8px;background:var(--orange);margin:-4px}
+#ring{width:38px;height:38px;border:2px solid var(--dark);margin:-19px;transition:width .2s,height .2s,margin .2s,background .2s}
+#ring.big{width:64px;height:64px;margin:-32px;background:#fa601f33}
+@media(pointer:coarse){#dot,#ring{display:none}body,a,button,input,label,textarea{cursor:auto}}
+/* nav */
+nav{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px 5vw;background:#f0e7d9ee;backdrop-filter:blur(8px);border-bottom:2.5px solid var(--dark)}
+.logo{font-family:'Lilita One';font-size:26px}.logo b{color:var(--orange);font-weight:400}
+nav span{background:var(--dark);color:var(--cream);padding:6px 14px;border-radius:99px;font-size:13px}
+/* hero */
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:3vw;align-items:center;padding:6vh 5vw 4vh;min-height:78vh;position:relative}
+.hero h1{font-size:clamp(46px,8vw,118px);letter-spacing:-1px}
+.hero h1 em{font-style:normal;color:var(--orange);display:inline-block;animation:wob 3s ease-in-out infinite}
+.hero h1 .ln{display:block;overflow:hidden}.hero h1 .ln i{display:block;font-style:normal;transform:translateY(110%);animation:up .9s cubic-bezier(.2,.9,.2,1) forwards}
+.hero h1 .ln:nth-child(2) i{animation-delay:.12s}.hero h1 .ln:nth-child(3) i{animation-delay:.24s}
+@keyframes up{to{transform:none}}@keyframes wob{50%{transform:rotate(-3deg) scale(1.04)}}
+.hero p{max-width:46ch;margin:22px 0 28px;font-size:18px}
+.btn{display:inline-block;border:3px solid var(--dark);background:var(--orange);color:var(--dark);font:400 20px 'Lilita One';padding:14px 30px;border-radius:99px;box-shadow:5px 5px 0 var(--dark);transition:.15s;text-decoration:none}
+.btn:hover{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--dark)}
+.btn:disabled{opacity:.5}
+.stage{position:relative;height:min(68vh,560px);display:grid;place-items:center}
+.blob{position:absolute;width:88%;aspect-ratio:1;background:var(--orange);border:4px solid var(--dark);animation:morph 9s ease-in-out infinite,spin 40s linear infinite}
+@keyframes morph{0%,100%{border-radius:58% 42% 55% 45%/45% 55% 45% 55%}50%{border-radius:42% 58% 40% 60%/58% 42% 60% 40%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+#hero-img{position:relative;height:100%;image-rendering:auto;filter:drop-shadow(8px 10px 0 #1b150f55);animation:float 4s ease-in-out infinite;transition:transform .1s}
+@keyframes float{50%{translate:0 -16px}}
+.sticker{position:absolute;background:var(--cream);border:3px solid var(--dark);border-radius:14px;padding:6px 12px;font:400 17px 'Lilita One';box-shadow:3px 3px 0 var(--dark)}
+.s1{top:10%;left:2%;rotate:-8deg;animation:bob 3s infinite}.s2{bottom:16%;right:0;rotate:7deg;animation:bob 3.6s infinite .5s}.s3{top:30%;right:4%;rotate:5deg;background:var(--dark);color:var(--cream);animation:bob 3.3s infinite 1s}
+@keyframes bob{50%{translate:0 -9px}}
+/* marquee */
+.mq{background:var(--dark);color:var(--cream);border-block:3px solid var(--dark);overflow:hidden;white-space:nowrap;rotate:-1.2deg;margin:2vh -2vw}
+.mq div{display:inline-block;padding:14px 0;font:400 26px 'Lilita One';animation:mq 24s linear infinite}
+.mq b{color:var(--orange);font-weight:400;margin:0 22px}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* tool */
+section{padding:7vh 5vw}
+.tool{max-width:860px;margin:auto;background:#fff8;border:3px solid var(--dark);border-radius:var(--r);box-shadow:9px 9px 0 var(--dark);padding:clamp(20px,4vw,40px)}
+.tool h2{font-size:clamp(30px,4vw,44px);margin-bottom:6px}
+.tabs{display:flex;gap:8px;margin:20px 0 16px;position:relative}
+.tab{flex:1;padding:12px;border:3px solid var(--dark);border-radius:14px;background:transparent;font:400 18px 'Lilita One';color:var(--dark);transition:.2s}
+.tab.on{background:var(--dark);color:var(--cream)}
+input[type=text]{width:100%;padding:16px 18px;border:3px solid var(--dark);border-radius:14px;background:var(--cream);font:500 16px 'DM Sans';color:var(--dark);outline:none;transition:.2s}
+input[type=text]:focus{box-shadow:0 0 0 4px #fa601f66;border-color:var(--orange)}
+.drop{display:grid;place-items:center;gap:6px;padding:34px;border:3px dashed var(--dark);border-radius:14px;text-align:center;transition:.2s}
+.drop.over{background:#fa601f33;border-color:var(--orange);transform:scale(1.02)}
+.pane{display:none}.pane.on{display:block;animation:pop .35s}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+.row{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:22px}
+.lang{display:flex;border:3px solid var(--dark);border-radius:99px;overflow:hidden}
+.lang button{border:0;background:transparent;padding:9px 18px;font:700 14px 'DM Sans';color:var(--dark)}
+.lang button.on{background:var(--orange)}
+.err{color:#b3260e;font-weight:700;margin-top:12px;min-height:24px}
+/* loader */
+#loader{position:fixed;inset:0;z-index:200;background:var(--dark);color:var(--cream);display:none;place-items:center;text-align:center;padding:20px}
+#loader.on{display:grid;animation:wipe .6s cubic-bezier(.7,0,.2,1)}
+@keyframes wipe{from{clip-path:circle(0 at 50% 60%)}to{clip-path:circle(150% at 50% 60%)}}
+.ldr{width:min(440px,92vw)}
+.face{position:relative;width:170px;height:170px;margin:0 auto 18px}
+.face::before{content:"";position:absolute;inset:-14px;border-radius:50%;border:4px dashed var(--orange);animation:spin 6s linear infinite}
+.face img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;scale:.6;transition:.3s}
+.face img.on{opacity:1;scale:1;animation:shake .5s infinite alternate}
+@keyframes shake{from{rotate:-5deg}to{rotate:5deg}}
+#stage-t{font:400 28px 'Lilita One';min-height:34px}
+.bar{height:26px;border:3px solid var(--cream);border-radius:99px;margin:18px 0 8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(-45deg,var(--orange) 0 14px,#ff8a4f 14px 28px);background-size:40px 100%;animation:stripe .6s linear infinite;transition:width .8s ease}
+@keyframes stripe{to{background-position:40px 0}}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:14px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--orange);animation:bnc 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes bnc{50%{translate:0 -14px}}
+.quip{opacity:.7;font-size:14px;margin-top:14px;min-height:24px}
+/* results */
+#results{display:none;max-width:1100px;margin:auto}
+#results.on{display:block}
+.rt{font-size:clamp(32px,5vw,60px);margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.card{background:#fff9;border:3px solid var(--dark);border-radius:var(--r);padding:24px;box-shadow:6px 6px 0 var(--dark);opacity:0;transform:translateY(30px) rotate(1deg);animation:card .6s cubic-bezier(.2,.9,.2,1) forwards;position:relative}
+.card.wide{grid-column:1/-1}.card.or{background:var(--orange)}.card.dk{background:var(--dark);color:var(--cream);box-shadow:6px 6px 0 var(--orange)}
+@keyframes card{to{opacity:1;transform:none}}
+.card h3{font-size:26px;margin-bottom:12px}
+.card ul{padding-left:20px}.card li{margin:6px 0}
+.cp{position:absolute;top:18px;right:18px;border:2px solid currentColor;background:transparent;color:inherit;border-radius:99px;padding:3px 12px;font:700 12px 'DM Sans'}
+.tx{max-height:240px;overflow:auto;font-size:14px;white-space:pre-wrap}
+/* chat */
+.chat{max-width:860px;margin:auto}
+.msgs{height:340px;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:6px 4px}
+.m{max-width:82%;padding:12px 16px;border:3px solid var(--dark);border-radius:18px;animation:pop .3s;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--orange);border-bottom-right-radius:4px}
+.m.b{background:var(--cream);border-bottom-left-radius:4px;box-shadow:3px 3px 0 var(--dark)}
+.send{display:flex;gap:10px;margin-top:14px}.send .btn{padding:10px 22px;white-space:nowrap}
+footer{text-align:center;padding:5vh 5vw 8vh;font:400 22px 'Lilita One'}
+#cf{position:fixed;inset:0;pointer-events:none;z-index:300}
+@media(max-width:820px){.hero{grid-template-columns:1fr;text-align:center}.hero p{margin-inline:auto}.stage{height:380px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div id="dot"></div><div id="ring"></div><canvas id="cf"></canvas>
+
+<nav><div class="logo">Chaos<b>Maker</b></div><span>AI Video Assistant</span></nav>
+
+<header class="hero">
+  <div>
+    <h1><span class="ln"><i>Drop a video.</i></span><span class="ln"><i>Get the <em>chaos</em></i></span><span class="ln"><i>sorted.</i></span></h1>
+    <p>Paste a YouTube link or upload a recording. You get a transcript, summary, action items, decisions and open questions, then chat with the video.</p>
+    <a href="#tool" class="btn">Start now</a>
+  </div>
+  <div class="stage" id="stage">
+    <div class="blob"></div>
+    <img id="hero-img" src="/static/img/hero.png" alt="Chaos Maker character">
+    <div class="sticker s1">Big dreams</div><div class="sticker s2">Bigger plans (maybe)</div><div class="sticker s3">Not a problem, just a new content idea!</div>
+  </div>
+</header>
+
+<div class="mq"><div id="mq"></div></div>
+
+<section id="tool">
+  <div class="tool">
+    <h2>What are we unpacking?</h2>
+    <p>Works with YouTube links, audio and video files.</p>
+    <div class="tabs"><button class="tab on" data-p="p-url">YouTube link</button><button class="tab" data-p="p-file">Upload file</button></div>
+    <div class="pane on" id="p-url"><input type="text" id="url" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="pane" id="p-file"><label class="drop" id="drop"><b class="disp" style="font-size:24px">Drop your file here</b><span id="fname">or click to browse (mp3, mp4, wav, m4a...)</span><input type="file" id="file" accept="audio/*,video/*" hidden></label></div>
+    <div class="row">
+      <div class="lang" id="lang"><button class="on" data-l="english">English</button><button data-l="hinglish">Hinglish</button></div>
+      <button class="btn" id="go">Analyze video</button>
+    </div>
+    <div class="err" id="err"></div>
+  </div>
+</section>
+
+<div id="loader"><div class="ldr">
+  <div class="face" id="faces"></div>
+  <div id="stage-t">Starting</div>
+  <div class="bar"><i id="pb"></i></div>
+  <div><b id="pct" class="disp" style="font-size:22px">0%</b></div>
+  <div class="dots"><i></i><i></i><i></i></div>
+  <div class="quip" id="quip"></div>
+</div></div>
+
+<section id="results">
+  <h2 class="rt" id="title"></h2>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="chatsec" style="display:none">
+  <div class="tool chat">
+    <h2>Chat with your video</h2><p>Ask anything about what was said.</p>
+    <div class="msgs" id="msgs"></div>
+    <div class="send"><input type="text" id="q" placeholder="Who owns the next step?"><button class="btn" id="ask">Ask</button></div>
+  </div>
+</section>
+
+<footer>Create · Learn · Grow · Make it fun</footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let jobId=null,lang='english',fileObj=null;
+const faces=['happy','excited','shocked','silly','sleepy'];
+$('#mq').innerHTML=('<span>Transcribe</span><b>✦</b><span>Summarize</span><b>✦</b><span>Action items</span><b>✦</b><span>Decisions</span><b>✦</b><span>Chat</span><b>✦</b>').repeat(8);
+$('#faces').innerHTML=faces.map(f=>`<img src="/static/img/face_${f}.png" alt="">`).join('');
+/* cursor */
+let mx=0,my=0,rx=0,ry=0;
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;$('#dot').style.transform=`translate(${mx}px,${my}px)`;
+  const s=$('#stage').getBoundingClientRect();if(my<s.bottom&&my>s.top){const x=(mx/innerWidth-.5)*14,y=(my/innerHeight-.5)*8;$('#hero-img').style.transform=`rotateY(${x}deg) rotateX(${-y}deg) translate(${x}px,${y}px)`}});
+(function t(){rx+=(mx-rx)*.15;ry+=(my-ry)*.15;$('#ring').style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(t)})();
+document.addEventListener('mouseover',e=>$('#ring').classList.toggle('big',!!e.target.closest('a,button,label,input')));
+/* tabs / lang / file */
+$$('.tab').forEach(t=>t.onclick=()=>{$$('.tab,.pane').forEach(x=>x.classList.remove('on'));t.classList.add('on');$('#'+t.dataset.p).classList.add('on')});
+$$('#lang button').forEach(b=>b.onclick=()=>{$$('#lang button').forEach(x=>x.classList.remove('on'));b.classList.add('on');lang=b.dataset.l});
+const setFile=f=>{fileObj=f;$('#fname').textContent=f?f.name:'or click to browse'};
+$('#file').onchange=e=>setFile(e.target.files[0]);
+['dragover','dragenter'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();$('#drop').classList.add('over')}));
+['dragleave','drop'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();$('#drop').classList.remove('over');if(ev==='drop')setFile(e.dataTransfer.files[0])}));
+/* loader */
+const quips=['Teaching the robot to listen…','Chaos is loading, please stay calm.','Not a problem, just a new content idea!','Big dreams + bigger plans…','Overthinking this on your behalf…'];
+let fi=0,fT,qT;
+function loader(on){const L=$('#loader');L.classList.toggle('on',on);document.body.style.overflow=on?'hidden':'';
+  clearInterval(fT);clearInterval(qT);if(!on)return;
+  const im=$$('#faces img');const sw=()=>{im.forEach((x,i)=>x.classList.toggle('on',i===fi%im.length));fi++};sw();fT=setInterval(sw,1100);
+  let q=0;const sq=()=>$('#quip').textContent=quips[q++%quips.length];sq();qT=setInterval(sq,2800)}
+function prog(p,s){$('#pb').style.width=p+'%';$('#pct').textContent=Math.round(p)+'%';if(s&&$('#stage-t').textContent!==s)$('#stage-t').textContent=s}
+/* run */
+$('#go').onclick=async()=>{
+  $('#err').textContent='';
+  const fd=new FormData(),useFile=$('#p-file').classList.contains('on');
+  fd.append('language',lang);
+  if(useFile){if(!fileObj)return $('#err').textContent='Choose a file first.';fd.append('file',fileObj)}
+  else{const u=$('#url').value.trim();if(!u)return $('#err').textContent='Paste a YouTube link first.';fd.append('url',u)}
+  loader(true);prog(2,'Starting');
+  try{
+    const r=await fetch('/api/process',{method:'POST',body:fd}),d=await r.json();
+    if(!r.ok)throw Error(d.error);jobId=d.job_id;poll()
+  }catch(e){loader(false);$('#err').textContent=e.message}
+};
+function poll(){const t=setInterval(async()=>{
+  try{const d=await(await fetch('/api/status/'+jobId)).json();
+    if(d.status==='error'){clearInterval(t);loader(false);$('#err').textContent=d.error||'Something went wrong.'}
+    else if(d.status==='done'){clearInterval(t);prog(100,'Done');setTimeout(()=>{loader(false);show(d.result)},700)}
+    else prog(d.progress,d.stage)
+  }catch(e){clearInterval(t);loader(false);$('#err').textContent='Lost connection to the server.'}},1200)}
+/* render */
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function fmt(s){s=Array.isArray(s)?s.join('\n'):String(s||'');const L=s.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(L.some(l=>/^([-*•]|\d+[.)])\s/.test(l)))return '<ul>'+L.map(l=>'<li>'+esc(l.replace(/^([-*•]|\d+[.)])\s+/,''))+'</li>').join('')+'</ul>';
+  return L.map(l=>'<p>'+esc(l)+'</p>').join('')}
+function show(r){
+  $('#title').textContent='';const T=r.title||'Your results';let i=0;const ty=setInterval(()=>{$('#title').textContent=T.slice(0,++i);if(i>=T.length)clearInterval(ty)},30);
+  const C=[['Summary',r.summary,'wide or'],['Action items',r.action_items,''],['Key decisions',r.key_decisions,'dk'],['Open questions',r.open_questions,''],['Full transcript',r.transcript,'wide tx']];
+  $('#grid').innerHTML=C.map((c,n)=>`<div class="card ${c[2].replace('tx','')}" style="animation-delay:${n*.12}s"><button class="cp" data-n="${n}">Copy</button><h3>${c[0]}</h3>${c[2].includes('tx')?'<div class="tx">'+esc(c[1])+'</div>':fmt(c[1])}</div>`).join('');
+  $$('.cp').forEach(b=>b.onclick=()=>{navigator.clipboard.writeText(C[b.dataset.n][1]);b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1400)});
+  $('#results').classList.add('on');$('#chatsec').style.display='block';$('#msgs').innerHTML='';
+  bot('Hi! I have the whole video in my head. Ask me anything.');
+  confetti();$('#results').scrollIntoView({behavior:'smooth'})}
+/* chat */
+function msg(t,c){const d=document.createElement('div');d.className='m '+c;d.textContent=t;$('#msgs').append(d);$('#msgs').scrollTop=1e9;return d}
+const bot=t=>msg(t,'b');
+async function ask(){const q=$('#q').value.trim();if(!q)return;$('#q').value='';msg(q,'u');
+  const w=msg('…','b');let k=0;const a=setInterval(()=>w.textContent='.'.repeat(k++%3+1),300);
+  try{const d=await(await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job_id:jobId,question:q})})).json();
+    clearInterval(a);w.textContent=d.answer||d.error}catch(e){clearInterval(a);w.textContent='Could not reach the server.'}}
+$('#ask').onclick=ask;$('#q').onkeydown=e=>e.key==='Enter'&&ask();
+/* confetti */
+function confetti(){const c=$('#cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const col=['#FA601F','#1B150F','#F0E7D9','#FA601F'],P=Array.from({length:150},()=>({x:innerWidth/2,y:innerHeight*.6,vx:(Math.random()-.5)*20,vy:-Math.random()*20-4,s:Math.random()*10+5,r:Math.random()*6,c:col[Math.random()*4|0]}));
+  let f=0;(function d(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.5;p.r+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(f++<110)requestAnimationFrame(d);else x.clearRect(0,0,c.width,c.height)})()}
+</script>
+</body>
+</html>
+{% endraw %}
